@@ -23,6 +23,8 @@ class InfoMessage:
 
 
 M_IN_KM = 1000
+MINUTES_IN_HOUR = 60
+SM_IN_M = 100
 
 class Training:
     """Базовый класс тренировки."""
@@ -63,19 +65,47 @@ class Running(Training):
     def get_spent_calories(self) -> float:
         CALORIES_MEAN_SPEED_MULTIPLIER = 18
         CALORIES_MEAN_SPEED_SHIFT = 1.79
-        MINUTES_IN_HOUR = 60
         calories = ((CALORIES_MEAN_SPEED_MULTIPLIER * Running.get_mean_speed() + 
                     CALORIES_MEAN_SPEED_SHIFT) * self.weight / M_IN_KM * 
                     self.duration / MINUTES_IN_HOUR)
+        return calories            
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    pass
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 height: int
+                 ) -> None:
+        super().__init__(action)
+        super().__init__(duration)
+        super().__init__(weight)
+        self.height = height
 
+    def get_spent_calories(self) -> float:
+        WEIGHT_MULTIPLIER_FIRST = 0.035
+        WEIGHT_MULTIPLIER_SECOND = 0.029
+        calories = ((WEIGHT_MULTIPLIER_FIRST * self.weight +
+                    (SportsWalking.get_mean_speed() ** 2 / self.height / SM_IN_M) *
+                    WEIGHT_MULTIPLIER_SECOND * self.weight) *
+                    self.duration / MINUTES_IN_HOUR)
 
 class Swimming(Training):
     """Тренировка: плавание."""
-    pass
+    def __init__(self,
+                 action: int,
+                 duration: float,
+                 weight: float,
+                 lenght_pool: float,
+                 count_pool: int
+                 ) -> None:
+        super().__init__(action)
+        super().__init__(duration)
+        super().__init__(weight)
+        self.lenght_pool = lenght_pool
+        self.count_pool = count_pool
+    
 
 
 def read_package(workout_type: str, data: list) -> Training:
