@@ -7,7 +7,7 @@ class InfoMessage:
                  distance: float,
                  speed: float,
                  calories: float
-                 ) -> str:
+                 ) -> None:
         self.training_type = training_type
         self.duration = duration
         self.distance = distance
