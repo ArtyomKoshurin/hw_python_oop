@@ -10,14 +10,14 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    message = ('Тип тренировки: {training_type}; '
+    Message = ('Тип тренировки: {training_type}; '
                'Длительность: {duration:.3f} ч.; '
                'Дистанция: {distance:.3f} км; '
                'Ср. скорость: {speed:.3f} км/ч; '
                'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
-        return self.message.format(**asdict(self))
+        return self.Message.format(**asdict(self))
 
 
 @dataclass
@@ -78,9 +78,6 @@ class SportsWalking(Training):
 # Побоялся использовать здесь dataclass, т.к.
 # переопределяем свойства родительского класса.
 # Если я правильно понял - dataclass лучше использовать только в родительских
-    action: int
-    duration: float
-    weight: float
     height: int
 
     def get_spent_calories(self) -> float:
@@ -98,9 +95,6 @@ class Swimming(Training):
     SPEED_TERM = 1.1
     SPEED_MULTIPLIER = 2
 
-    action: int
-    duration: int
-    weight: int
     length_pool: int
     count_pool: int
 
