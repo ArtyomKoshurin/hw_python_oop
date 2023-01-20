@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import List
 
 
@@ -10,21 +10,14 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
+    message = ('Тип тренировки: {training_type}; '
+               'Длительность: {duration:.3f} ч.; '
+               'Дистанция: {distance:.3f} км; '
+               'Ср. скорость: {speed:.3f} км/ч; '
+               'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
-        MESSAGE = (f'Тип тренировки: {self.training_type}; '
-                   f'Длительность: {self.duration:.3f} ч.; '
-                   f'Дистанция: {self.distance:.3f} км; '
-                   f'Ср. скорость: {self.speed:.3f} км/ч; '
-                   f'Потрачено ккал: {self.calories:.3f}.')
-        final_message = MESSAGE.format(
-            training_type=self.training_type,
-            duration=self.duration,
-            distance=self.distance,
-            speed=self.speed,
-            calories=self.calories
-        )
-        return final_message
+        return self.message.format(**asdict(self))
 
 
 @dataclass
@@ -74,6 +67,7 @@ class Running(Training):
                 * self.duration * self.MIN_IN_H)
 
 
+@dataclass
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     CALORIES_WEIGHT_MULTIPLIER = 0.035
@@ -84,15 +78,10 @@ class SportsWalking(Training):
 # Побоялся использовать здесь dataclass, т.к.
 # переопределяем свойства родительского класса.
 # Если я правильно понял - dataclass лучше использовать только в родительских
-    def __init__(
-            self,
-            action: int,
-            duration: float,
-            weight: float,
-            height: int
-    ) -> None:
-        super().__init__(action, duration, weight)
-        self.height = height
+    action: int
+    duration: float
+    weight: float
+    height: int
 
     def get_spent_calories(self) -> float:
         return ((self.CALORIES_WEIGHT_MULTIPLIER * self.weight
@@ -102,23 +91,18 @@ class SportsWalking(Training):
                 * self.duration * self.MIN_IN_H)
 
 
+@dataclass
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP = 1.38
     SPEED_TERM = 1.1
     SPEED_MULTIPLIER = 2
 
-    def __init__(
-            self,
-            action: int,
-            duration: int,
-            weight: int,
-            length_pool: int,
-            count_pool: int
-    ) -> None:
-        super().__init__(action, duration, weight)
-        self.length_pool = length_pool
-        self.count_pool = count_pool
+    action: int
+    duration: int
+    weight: int
+    length_pool: int
+    count_pool: int
 
     def get_mean_speed(self) -> float:
         return (self.length_pool
@@ -138,11 +122,10 @@ def read_package(workout_type: str, data: List[int]) -> Training:
         'WLK': SportsWalking
     }
     if workout_type not in training_types:
-        raise ValueError('Несуществующий тип тренировки'
-                         'Возможные типы тренировки - ',
-                         training_types.keys)
-    else:
-        return training_types[workout_type](*data)
+        raise ValueError("Несуществующий тип тренировки. "
+                         "Возможные типы тренировки - "
+                         f"{', '.join(training_types)}")
+    return training_types[workout_type](*data)
 
 
 def main(training: Training) -> None:
